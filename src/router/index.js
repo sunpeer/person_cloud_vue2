@@ -14,27 +14,41 @@ const routes = [
     component: Home
   },
   {
-    path:'/admin',
+    path:'/admin/:id',
     name:'admin',
     component:Admin,
     beforeEnter:(to,form,next)=>{
       //判断是否登录
-      sessionStorage.getItem('logintype')==="admin"?next():next({name:'login'})
+      if(sessionStorage.getItem('logintype')==="admin"&&sessionStorage.getItem('loginid')===to.params.id)
+        next()
+      else{
+        next({name:'login',params:{type:'admin'}})
+      }
     }
   },
   {
-    path:'/user',
+    path:'/user/:id',
     name:'user',
     component:User,
     beforeEnter:(to,form,next)=>{
       //判断是否登录
-      sessionStorage.getItem('logintype')==="user"?next():next({name:'login'})
+      if(sessionStorage.getItem('logintype')==='user'&&sessionStorage.getItem('loginid')===to.params.id)
+        next()
+      else
+          next({name:'login',params:{type:'user'}})
     }
   },
   {
-    path:'/login',
+    path:'/login/:type',
     name:'login',
-    component:Login
+    component:Login,
+    beforeEnter:(to,form,next)=>{
+      //如果type的值不对，则不允许进去
+      if(to.params.type!=='user'&&to.params.type!=='admin')
+        next({name:'home'})
+      else
+        next()
+    }
   },
   {
     path:'*',
