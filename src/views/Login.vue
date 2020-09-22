@@ -144,21 +144,23 @@ export default {
                 let publickey=response.data.data.publicKey
                 //加密
                 let encrypteddata=_t.encrypt(publickey,_t.registerdata.pwd)
-                let pwdarray=[]
-                for(const value of encrypteddata.values()) {
-                    pwdarray.push(value)
-                }
+                // let pwdarray=[]
+                // for(const value of encrypteddata.values()) {
+                //     pwdarray.push(value)
+                // }
+                let pwdarray=_t.registerdata.pwd
                 //注册
-                if(_t.registerdata.isuser)
-                {
+                if(_t.registerdata.isuser){
                     _t.$axios.post('/create/user',{
                         pwd:pwdarray,name:_t.registerdata.name,group:'roomate'
                     }).then(response=>{
                         //注册成功
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','user')
-                        sessionStorage.setItem('loginid',ressponse.data.data.id)
-                        route.push({path:'user',params:{id:response.data.data.id}})
+                        sessionStorage.setItem('loginid',response.data.data.id)
+                        _t.$router.push({name:'user',params:{id:response.data.data.id}}).catch((error)=>{
+                            console.log(error)
+                        })
                         // console.log(response.data.data)
                     }).catch(error=>{
                         _t.$message.error('注册失败')
@@ -171,8 +173,10 @@ export default {
                         //注册成功
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','admin')
-                        sessionStorage.setItem('loginid',ressponse.data.data.id)
-                        route.push({path:'admin',params:{id:response.data.data.id}})
+                        sessionStorage.setItem('loginid',response.data.data.id)
+                        _t.$router.push({name:'admin',params:{id:response.data.data.id}}).catch((error)=>{
+                            console.log(error)
+                        })
                         // console.log(response.data.data)
                     }).catch(error=>{
                         _t.$message.error('注册失败')
@@ -188,6 +192,52 @@ export default {
             console.log('registerUploading:%O',_t.registerdata)
         },
         loginUpload(){
+            let _t=this
+            _t.$axios.get('/crypto_ready').then(function(response){
+                //获得公钥
+                let publickey=response.data.data.publicKey
+                //加密
+                let encrypteddata=_t.encrypt(publickey,_t.logindata.pwd)
+                // let pwdarray=[]
+                // for(const value of encrypteddata.values()) {
+                //     pwdarray.push(value)
+                // }
+                let pwdarray=_t.logindata.pwd
+                if(_t.logindata.isuser){
+                    _t.$axios.post('/user/login',{
+                        pwd:pwdarray,id:_t.logindata.id
+                    }).then(response=>{
+                        //注册成功
+                        //客户端本地存储路由信息
+                        sessionStorage.setItem('logintype','user')
+                        sessionStorage.setItem('loginid',_t.logindata.id)
+                        _t.$router.push({name:'user',params:{id:_t.logindata.id}}).catch((error)=>{
+                            console.log(error)
+                        })
+                    }).catch(error=>{
+                        _t.$message.error('登录失败')
+                        console.log(error)
+                    })
+                }else{
+                        _t.$axios.post('/admin/login',{
+                        pwd:pwdarray,id:_t.logindata.id
+                    }).then(response=>{
+                        //注册成功
+                        //客户端本地存储路由信息
+                        sessionStorage.setItem('logintype','admin')
+                        sessionStorage.setItem('loginid',_t.logindata.id)
+                        _t.$router.push({name:'admin',params:{id:_t.logindata.id}}).catch((error)=>{
+                            console.log(error)
+                        })
+                    }).catch(error=>{
+                        _t.$message.error('登录失败')
+                        console.log(error)
+                    })
+                }
+            }).catch(error=>{
+                _t.$message.error('获得公钥失败')
+                console.log(error)
+            })
             console.log('loginUploading:%O',this.logindata)
         },
         submit(formname){

@@ -13,7 +13,7 @@ Vue.use(ElementUI);
 
 //对axios做全局配置
 axios.defaults.baseURL='http://localhost:3000'
-
+axios.defaults.withCredentials = true;
 //注册一些工具
 Vue.prototype.$axios=axios;
 Vue.prototype.encrypt=crypt

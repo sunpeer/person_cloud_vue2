@@ -95,7 +95,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -107,7 +107,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -119,7 +119,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -131,7 +131,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -143,7 +143,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -155,7 +155,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -167,7 +167,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -179,7 +179,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',
@@ -191,7 +191,7 @@ export default {
         },
         {
           filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
+          keywords:'JAVE,IDE',
           type:'软件',
           size:1200,
           state:'creating',

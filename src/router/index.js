@@ -19,11 +19,10 @@ const routes = [
     component:Admin,
     beforeEnter:(to,form,next)=>{
       //判断是否登录
-      if(sessionStorage.getItem('logintype')==="admin"&&sessionStorage.getItem('loginid')===to.params.id)
+      if(sessionStorage.getItem('logintype')==="admin"&&sessionStorage.getItem('loginid')==to.params.id)
         next()
-      else{
+      else
         next({name:'login',params:{type:'admin'}})
-      }
     }
   },
   {
@@ -32,10 +31,10 @@ const routes = [
     component:User,
     beforeEnter:(to,form,next)=>{
       //判断是否登录
-      if(sessionStorage.getItem('logintype')==='user'&&sessionStorage.getItem('loginid')===to.params.id)
+      if(sessionStorage.getItem('logintype')==='user'&&sessionStorage.getItem('loginid')==to.params.id)
         next()
       else
-          next({name:'login',params:{type:'user'}})
+        next({name:'login',params:{type:'user'}})
     }
   },
   {

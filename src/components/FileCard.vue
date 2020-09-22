@@ -2,7 +2,6 @@
     <div>
         <el-card>
             <p style="margin-top:0px;margin-bottom:5px">{{file.desc}}</p>
-
             <el-row type='flex' justify="space-between"> 
                 <el-col>
                     <el-tag size=mini v-for='(t,i) in file.keywords.split(",")' :key='i'>{{t}}</el-tag>

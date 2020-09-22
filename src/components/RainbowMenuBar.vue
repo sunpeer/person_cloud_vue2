@@ -2,7 +2,7 @@
     <div @mouseenter="onHover()">
         <el-menu default-active="1" mode="horizontal" :background-color="backgroundcolor" text-color="#fff" active-text-color="#ffd04b">
             <el-menu-item index="1"><router-link to='/'>云中心</router-link></el-menu-item>
-            <el-menu-item index="2"><router-link :to="{name:'user',params:{type:'user'}}">个人中心</router-link></el-menu-item>
+            <el-menu-item index="2"><router-link :to="{name:'login',params:{type:'user'}}">个人中心</router-link></el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -14,6 +14,7 @@ export default {
             backgroundcolor:'#0099ff'
         }
     },
+    props:['id','type'],
     methods:{ 
         onHover(){
             // console.log('on mouseenter')

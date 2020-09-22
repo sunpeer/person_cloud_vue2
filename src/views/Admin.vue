@@ -1,10 +1,13 @@
 <template>
     <div>
         <el-row>
-            <el-col :span=16>
-                <confirm-file></confirm-file>
+            <el-col :span=5>
+              <admin-profile :adminprofile='adminprofile'></admin-profile>
             </el-col>
-            <el-col :span=6 :offset=2>
+            <el-col :offset=1 :span=12>
+                <confirm-file :file='confirmfile' :adminprofile="adminprofile" @confirmsuccess="updateAdmin"></confirm-file>
+            </el-col>
+            <el-col :span=5 :offset=1>
             <el-divider content-position='left'>校核记录</el-divider>
                 <el-timeline>
                     <el-timeline-item v-for='(file,index) in confirmedfiles' :key='index' :timestamp='file.confirmdate'>
@@ -17,7 +20,7 @@
         <el-divider content-position='left'>待审核文件</el-divider>
         <el-carousel type="card" height='200px'>
             <el-carousel-item v-for='(file,index) in confirmingfiles' :key='index'>
-                <file-card :file='file'></file-card>
+                <confirm-file-card @select='setCurrentConfirmFile' :file='file'></confirm-file-card>
             </el-carousel-item>
         </el-carousel>
     </div>
@@ -25,15 +28,40 @@
 
 <script>
 import ConfirmFile from "../components/ConfirmFile.vue"
-import FileCard from "../components/FileCard.vue"
+import ConfirmFileCard from "../components/ConfirmFileCard.vue"
+import AdminProfile from "../components/AdminProfile.vue"
 
 export default {
     components:{
         ConfirmFile,
-        FileCard
+        ConfirmFileCard,
+        AdminProfile
+    },
+    created(){
+        this.adminid=this.$route.params.id
+        this.updateAdmin();
+      //请求到管理员的adminprofile
+      //请求到用户需要confirm的样本，为了能让动态更新到，你要考虑周全
     },
     data(){
         return {
+            adminid:null,
+          adminprofile:{
+            id:null,
+            name:'',
+            createtime:'',
+            worktotal:0,
+            workid:null
+          },
+          confirmfile:{
+              filename:'',
+              keywords:[],
+              filetype:'',
+              desc:"",
+              userid:null,
+              fileid:null,
+              filecreationlastid:null
+          },
             confirmedfiles:[
                 {
                     filename:'WPS',
@@ -56,147 +84,47 @@ export default {
                     confirmdate:'2020-10-07 00:00:00'
                 }
             ],
-            confirmingfiles:[
-{
-          filename:'WPS',
-          userid:1,
-          fileid:1,
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'normal',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-      ]
+
+            //样本
+            confirmingfiles:[{
+              filename:'WPS',
+              keywords:['JAVA','IDE'],
+              filetype:'软件',
+              desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
+              userid:1,
+              fileid:1,
+              filecreationlastid:null
+            },
+            ]
         }
+    },
+    methods:{
+      setCurrentConfirmFile(file){
+        this.confirmfile=Object.assign({},file)
+      },
+      updateAdmin(){
+          let _t=this
+          this.$axios.get('/admin/detail',{params:{id:this.adminid}}).then(function(response){
+              _t.adminprofile.id=response.data.data.id
+              _t.adminprofile.name=response.data.data.name
+              _t.adminprofile.workid=response.data.data.work_id
+              _t.adminprofile.createtime=response.data.data.create_time
+              _t.adminprofile.worktotal=response.data.data.work_total
+          }).catch(function(error){
+              _t.$message.error('获取管理员信息失败')
+              console.log(error)
+          })
+      },
+      updateConfirmedFiles(){
+          //更新管理员审核过的文件列表
+      }
+    },
+    watch:{
+        'adminprofile.workid':'updateConfirmedFiles'
     }
 }
 </script>
 
 <style scoped>
-  .el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 200px;
-    margin: 0;
-  }
-  
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
-  
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
-  }
+
 </style>
