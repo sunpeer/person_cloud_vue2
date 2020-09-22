@@ -1,8 +1,10 @@
 <template>
     <div align='center'>
         <h2>{{adminprofile.name}}</h2>
-        <p><i class="el-icon-document-add"></i>{{adminprofile.worktotal}}</p>
-        <p>{{adminprofile.createtime}}</p>
+        <el-tooltip effect='light' :content="`你审核过${adminprofile.worktotal}份文件`">
+            <p><i class="el-icon-document-add"></i>{{adminprofile.worktotal}}</p>
+        </el-tooltip>
+        <p>{{adminprofile.createtime.substr(0,10)}}</p>
     </div>
 </template>
 

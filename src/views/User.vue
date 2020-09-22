@@ -11,22 +11,24 @@
             <el-col :offset=1 :span=5>
                 <el-divider content-position='left'>上传记录</el-divider>
                 <el-timeline>
-                    <el-timeline-item v-for="(file,index) in createfiles" :key='index' :timestamp='file.createtime'>
-                        {{file.name}}&nbsp;<a style="font-style:italic;font-size:80%">{{file.downloadcount}}<i class="el-icon-download"></i></a>
+                    <el-timeline-item v-for="(file,index) in createfiles" :key='index' :type="file.is_available?'success':'danger'" :icon="file.is_available?'el-icon-check':'el-icon-close'">
+                        <el-tooltip effect="light" :content="file.is_available?'感谢你的，无私奉献，你的文件已经审核通过':'别着急，管理员马上就会审核你的文件了'">
+                            <span>{{file.file_name}}&nbsp;<a style="font-style:italic;font-size:80%"><i class="el-icon-download">{{file.download_total}}</i></a></span>
+                        </el-tooltip>
                     </el-timeline-item>
                 </el-timeline>
                 <br/>
                 <el-divider content-position='left'>下载记录</el-divider>
                 <el-timeline>
-                    <el-timeline-item v-for="(file,index) in createfiles" :key='index' :timestamp='file.createtime'>
-                        {{file.name}}<span>{{file.downloadcount}}</span>
+                    <el-timeline-item v-for="(file,index) in downloadfiles" :key='index'>
+                        {{file.file_name}}&nbsp;<a style="font-style:italic;font-size:80%"><i class="el-icon-download">{{file.download_total}}</i></a>
                     </el-timeline-item>
                 </el-timeline>
             </el-col>
         </el-row>
     </div>
 </template>
-
+    
 <script>
 import UploadFile from "../components/UploadFile"
 import UserProfile from "../components/UserProfile"
@@ -41,18 +43,21 @@ export default {
         this.updateUser();
     },
     methods:{
-
         //通过起始id，指定要查询的深度，返回用户下载来的文件信息
         getDownloadFiles(downloadid,count){
             let _t=this
             //通过newvalue来获取最近5个下载id，也就是新的downloadid来获取
             _t.$axios.get('/user/download',{params:{id:downloadid,count}}).then((response)=>{
-                console.log(response.data.data)
-                let ids='1,2,3,4,5,6'
+                let ids=response.data.data.result.file_ids.join(',')
+                _t.currentcreatestartid=response.data.data.result.next_id
                 //根据ids获得文件的信息
                 _t.$axios.get('/file',{params:{ids}}).then((response)=>{
-                    _t.downloadfiles=response.data
-                    _t.currentdownloadstartid=response.data.data.id
+                    //先移除数组内的所有对象，然后再塞进去给赋值
+                    _t.downloadfiles.splice(0)
+                    let index=0
+                    response.data.data.files.forEach((item)=>{
+                        _t.$set(_t.downloadfiles,index++,item)
+                    })
                 }).catch(error=>{
                     _5.$message.error('获取用户下载的文件信息失败')
                     console.log(error)
@@ -64,17 +69,22 @@ export default {
         },
         //监听到userprofile的downloadid变更时，更新downloadfiles
         updateDownloadFiles(newvalue,oldvalue){
+            //watch了的值在创建的时候会被调用
             this.getDownloadFiles(newvalue,5)
         },
         getCreatedFiles(createid,count){
             let _t=this
             _t.$axios.get('/user/creation',{params:{id:createid,count}}).then((response)=>{
-                console.log(response.data.data)
-                let ids='1,2,3,4,5,6'
+                let ids=response.data.data.result.file_ids.join(',')
+                _t.currentcreatestartid=response.data.data.result.next_id
                 //根据ids获得文件的信息
                 _t.$axios.get('/file',{params:{ids}}).then((response)=>{
-                    _t.createfiles=response.data
-                    _t.currentcreatestartid=response.data.data.id
+                    //先移除数组内的所有对象，然后再塞进去给赋值
+                    _t.createfiles.splice(0)
+                    let index=0
+                    response.data.data.files.forEach((item)=>{
+                        _t.$set(_t.createfiles,index++,item)
+                    })
                 }).catch(error=>{
                     _t.$message.error('获取用户创建的文件信息失败')
                     console.log(error)
@@ -85,6 +95,7 @@ export default {
             })
         },
         updateCreatedFiles(newvalue,oldvalue){
+            //watch了的值在创建的时候会被调用
             this.getCreatedFiles(newvalue,5)
         },
         updateUser(){
@@ -148,7 +159,4 @@ export default {
     margin-top:0px
 }
 
-/* .el-timeline-item__timestamp{
-     font-size: 80% !important;
-} */
 </style>

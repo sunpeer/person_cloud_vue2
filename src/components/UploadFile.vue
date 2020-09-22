@@ -18,7 +18,7 @@
             <el-form-item label="文件关键字" prop='keywords'
             :rules="{required:true, message:'必须为上传文件设置关键字',trigger:'blur'}" >
                 <el-checkbox-group v-model="uploadform.keywords" :max=5>
-                    <el-checkbox-button label='JAVA'></el-checkbox-button>
+                    <el-checkbox-button label='Java'></el-checkbox-button>
                     <el-checkbox-button label='IDE'></el-checkbox-button>
                     <el-checkbox-button label='机械'></el-checkbox-button>
                     <el-checkbox-button label='HTML'></el-checkbox-button>

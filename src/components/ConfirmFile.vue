@@ -21,7 +21,7 @@
                     <!-- <el-checkbox-button label='JAVA' @change='$event?confirmfile.keywords.push("JAVA"):confirmfile.keywords.splice([confirmfile.keywords.indexOf("JAVA")],1)' :checked='confirmfile.keywords.indexOf("JAVA")!==-1'></el-checkbox-button> -->
                     <!-- <el-checkbox-button label='IDE' @change='onKeywordsChange'></el-checkbox-button> -->
                     <!-- <el-checkbox-button label='IDE' @change='$event?confirmfile.keywords.push("IDE"):confirmfile.keywords.splice([confirmfile.keywords.indexOf("IDE")],1)' :checked='confirmfile.keywords.indexOf("IDE")!==-1'></el-checkbox-button> -->
-                    <el-checkbox-button label='JAVA'></el-checkbox-button>
+                    <el-checkbox-button label='Java'></el-checkbox-button>
                     <el-checkbox-button label='IDE'></el-checkbox-button>
                     <el-checkbox-button label='机械'></el-checkbox-button>
                     <el-checkbox-button label='HTML'></el-checkbox-button>
@@ -33,7 +33,7 @@
                     <el-checkbox-button label='电子'></el-checkbox-button>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="文件描述"> 
+            <el-form-item label="文件描述" prop='desc'>  
                 <el-input type="textarea" v-model="confirmfile.desc"></el-input>
             </el-form-item>
         </el-form>
@@ -67,13 +67,13 @@ export default {
                 //这个objec只在验证失败的时候会返回验证的结果
                 if(valid){
                     //表单上传
-                    this.$axios({
+                    _t.$axios({
                         method:'post',
                         url:'/file/confirm',
                         data:{
-                            file_type:_t.confirmfile.file_type,
-                            keywords:_t.confirmfile.keywords,
-                            file_desc:_t.confirmfile.file_desc,
+                            file_type:_t.confirmfile.filetype,
+                            keywords:_t.confirmfile.keywords.join(','),
+                            file_desc:_t.confirmfile.desc,
                             adminId:_t.adminprofile.id,
                             file_id:_t.confirmfile.fileid,
                             last_id:_t.confirmfile.filecreationlastid,
@@ -94,7 +94,16 @@ export default {
     },
     watch:{
         file:function(newvalue,oldvalue){
-            this.confirmfile=Object.assign({},newvalue)
+            let file={
+                filetype:newvalue.file_type,
+                keywords:newvalue.keywords,
+                desc:newvalue.file_desc,
+                fileid:newvalue.id,
+                filename:newvalue.file_name,
+                userid:newvalue.file_owner,
+                filecreationlastid:newvalue.file_creattion_history
+            }
+            this.confirmfile=Object.assign({},file)
         }
     }
 }
