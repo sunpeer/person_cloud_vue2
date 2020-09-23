@@ -2,62 +2,34 @@
   <div class="home">
     <el-container>
       <el-aside>   
-        
         <el-divider content-position='left'>类型</el-divider>
           <el-radio-group v-model="typeselect">
             <el-radio-button label='软件'></el-radio-button>
             <el-radio-button label='文档'></el-radio-button>
             <el-radio-button label='音乐'></el-radio-button>
-            <el-radio-button label='type1'></el-radio-button>
-            <el-radio-button label='type2'></el-radio-button>
-            <el-radio-button label='type3'></el-radio-button>
-            <el-radio-button label='任意'></el-radio-button>
+            <el-radio-button label='图片'></el-radio-button>
+            <el-radio-button label='项目工程'></el-radio-button>
+            <el-radio-button :label='null'>任意</el-radio-button>
           </el-radio-group>
         <el-divider content-position='left'>首字母</el-divider>
           <el-radio-group v-model="capitalselect" size="mini">
-            <el-radio-button label='A'></el-radio-button>
-            <el-radio-button label='B'></el-radio-button>
-            <el-radio-button label='C'></el-radio-button>
-            <el-radio-button label='D'></el-radio-button>
-            <el-radio-button label='E'></el-radio-button>
-            <el-radio-button label='F'></el-radio-button>
-            <el-radio-button label='G'></el-radio-button>
-            <el-radio-button label='H'></el-radio-button>
-            <el-radio-button label='I'></el-radio-button>
-            <el-radio-button label='J'></el-radio-button>
-            <el-radio-button label='K'></el-radio-button>
-            <el-radio-button label='L'></el-radio-button>
-            <el-radio-button label='M'></el-radio-button>
-            <el-radio-button label='N'></el-radio-button>
-            <el-radio-button label='O'></el-radio-button>
-            <el-radio-button label='P'></el-radio-button>
-            <el-radio-button label='Q'></el-radio-button>
-            <el-radio-button label='R'></el-radio-button>
-            <el-radio-button label='S'></el-radio-button>
-            <el-radio-button label='T'></el-radio-button>
-            <el-radio-button label='U'></el-radio-button>
-            <el-radio-button label='V'></el-radio-button>
-            <el-radio-button label='W'></el-radio-button>
-            <el-radio-button label='X'></el-radio-button>
-            <el-radio-button label='Y'></el-radio-button>
-            <el-radio-button label='Z'></el-radio-button>
-            <el-radio-button label='任意'></el-radio-button>
+            <el-radio-button v-for='(t,i) in capitals' :key='i' :label='t'></el-radio-button>
+            <el-radio-button :label='null'>任意</el-radio-button>
           </el-radio-group>
         <el-divider content-position='left'>关键字</el-divider>
-          <el-checkbox-group v-model="keywordsselect">
-            <el-checkbox-button label='JAVE'></el-checkbox-button>
-            <el-checkbox-button label='IDE'></el-checkbox-button>
+          <el-checkbox-group v-model="keywordsselect" :max=5>
+              <el-checkbox-button v-for='(t,i) in keywords' :key='i' :label='t'></el-checkbox-button>
           </el-checkbox-group>
         <el-divider></el-divider>
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" @click='getFilesByCond'>搜索</el-button>
       </el-aside>
       <el-main>
           <el-collapse accordion>
               <el-collapse-item v-for='(file,index) in files' :key='index'>
                 <template slot='title'>
-                    <strong style="font-size:x-large">{{file.filename}}</strong>
+                    <strong style="font-size:x-large">{{file.file_name}}</strong>
                 </template>
-                <file-card :file='file'>
+                <file-card :file='file' @download='file.download_total+=1'>
                 </file-card>
               </el-collapse-item>
           </el-collapse>
@@ -73,142 +45,91 @@ import FileCard from "../components/FileCard"
 
 export default {
   name: "Home",
+  created(){
+    this.getAllFilesId();
+  },
+  methods:{
+    handleFileDownload(fileid){
+      this.files.forEach(function(item){
+        if(item.id==fileid){
+          item.download_total+=1
+        }
+      })
+    },
+    getAllFilesId(){
+      //扒取所有文件的ids
+      let _t=this
+      this.$axios.get('/file').then(function(response){
+        //把返回数组做个统计
+        _t.filescount=response.data.data.ids.length
+        //把返回值做成字符串
+        _t.filesid=response.data.data.ids.join(',')
+      }).catch(function(error){
+        _t.$message.error('获取平台所有文件的id失败')
+        console.log(error)
+      })
+      },
+      getFilesByCond(){
+        let _t=this
+        let params={}
+        _t.typeselect?(params.type=_t.typeselect):null
+        _t.capitalselect?(params.capital=_t.capitalselect):null
+        _t.keywordsselect.length==0?null:(params.keyword=_t.keywordsselect)
+        _t.$axios.get('/search/file',{params}).then(function(response){
+        //把返回数组做个统计
+        _t.filescount=response.data.data.ids.length
+        //把返回值做成字符串
+        _t.filesid=response.data.data.ids.join(',')
+      }).catch(function(error){
+        _t.$message.error('获取平台所有文件的id失败')
+        console.log(error)
+      })
+      }
+  },
   data:function(){
     return {
+      keywords:['Java','IDE','机械','HTML','CSS','PHP','C++','C#','Matlab','电子'],
+      capitals:['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
       typeselect:'',
-      filescount:100,
+      filescount:0,
       currentpage:1,
       capitalselect:'',
       keywordsselect:[],
       files:[
-        {
-          filename:'WPS',
-          userid:1,
-          fileid:1,
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'normal',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-        {
-          filename:'WPS',
-          keywords:'JAVE,IDE',
-          type:'软件',
-          size:1200,
-          state:'creating',
-          desc:"这是一本非常好的书，我把他奉献出来给课题室的所有人使用，#######################################################，省略一万字",
-          time:'2020-10-01 00:00:00',
-          downloadcount:10,
-          userid:1,
-          fileid:1
-        },
-      ]
-    }
-  },
-  created(){
 
+      ],
+      filesid:''
+    }
   },
   components:{
     FileCard,
+  },
+  watch:{
+    filesid(newvalue,oldvalue){
+      let _t=this
+      //文件id改变了，就直接展示前10个文件就好
+      let ids=''
+      _t.currentpage=0
+      if(_t.filescount<11)
+        ids=newvalue
+      else
+        ids=newvalue.split(',').splice(0,10).join(',')
+      if(!ids){ //如果为空的，则先清空，再return
+        _t.files.splice(0)
+        return
+      }
+      _t.$axios.get('/file',{params:{ids}}).then(function(response){
+        //把当前的数组清空
+        _t.files.splice(0)
+        //把文件信息塞进数组
+        let index=0
+        response.data.data.files.forEach(function(item){
+            _t.$set(_t.files,index++,item)
+        })
+      }).catch(function(error){
+          _t.$message.error('获取文件的信息失败')
+        })
+    },
   }
 };
 </script>
@@ -217,8 +138,4 @@ export default {
   .el-main{
     padding-top:0px !important;
   }
-  /* .el-divider{
-    margin-top: 10px;
-    margin-bottom: 10px;
-  } */
 </style>

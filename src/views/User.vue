@@ -113,6 +113,8 @@ export default {
                 _t.userprofile.createid=response.data.data.create_id
                 _t.userprofile.downloadtotal=response.data.data.download_total
                 _t.userprofile.createtotal=response.data.data.create_total
+                sessionStorage.setItem('download_id',response.data.data.download_id)
+                sessionStorage.setItem('download_total',response.data.data.download_total)
             }).catch(error=>{
                 _t.$message.error('获取用户信息失败')
                 console.log(error)

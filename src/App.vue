@@ -2,7 +2,7 @@
   <div id="app">
     <el-container >
       <el-header>
-        <rainbow-menu-bar>
+        <rainbow-menu-bar :id='id' :type='type'>
         </rainbow-menu-bar>
       </el-header>
       <el-main>
@@ -20,6 +20,16 @@
 import RainbowMenuBar from './components/RainbowMenuBar'
 export default {
   components: {RainbowMenuBar},
+  created(){
+    this.type=sessionStorage.getItem('logintype')
+    this.id=sessionStorage.getItem('loginid')
+  },
+  data:function(){
+    return {
+      id:0,
+      type:''
+    }
+  },
   methods:{
 
   }

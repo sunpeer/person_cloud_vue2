@@ -158,6 +158,8 @@ export default {
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','user')
                         sessionStorage.setItem('loginid',response.data.data.id)
+                        _t.$root.$children[0].type='user'
+                        _t.$root.$children[0].id=response.data.data.id
                         _t.$router.push({name:'user',params:{id:response.data.data.id}}).catch((error)=>{
                             console.log(error)
                         })
@@ -174,6 +176,8 @@ export default {
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','admin')
                         sessionStorage.setItem('loginid',response.data.data.id)
+                        _t.$root.$children[0].type='admin'
+                        _t.$root.$children[0].id=response.data.data.id
                         _t.$router.push({name:'admin',params:{id:response.data.data.id}}).catch((error)=>{
                             console.log(error)
                         })
@@ -211,6 +215,8 @@ export default {
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','user')
                         sessionStorage.setItem('loginid',_t.logindata.id)
+                        _t.$root.$children[0].type='user'
+                        _t.$root.$children[0].id=response.data.data.id
                         _t.$router.push({name:'user',params:{id:_t.logindata.id}}).catch((error)=>{
                             console.log(error)
                         })
@@ -226,6 +232,8 @@ export default {
                         //客户端本地存储路由信息
                         sessionStorage.setItem('logintype','admin')
                         sessionStorage.setItem('loginid',_t.logindata.id)
+                        _t.$root.$children[0].type='admin'
+                        _t.$root.$children[0].id=response.data.data.id
                         _t.$router.push({name:'admin',params:{id:_t.logindata.id}}).catch((error)=>{
                             console.log(error)
                         })
